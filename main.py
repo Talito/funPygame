@@ -24,8 +24,9 @@ FPS = 30
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 25)
 
-def snake(lead_x, lead_y, BLOCK_SIZE):
-	pygame.draw.rect(gameDisplay, RED, [lead_x, lead_y, BLOCK_SIZE, BLOCK_SIZE])
+def snake(snakeList, BLOCK_SIZE):
+	for piece in snakeList:
+		pygame.draw.rect(gameDisplay, RED, [piece[0], piece[1], BLOCK_SIZE, BLOCK_SIZE])
 
 def message_to_screen(msg, color): 
 	screen_text = font.render(msg, True, color)
@@ -87,7 +88,14 @@ def gameLoop():
 		
 		gameDisplay.fill(WHITE)
 		pygame.draw.rect(gameDisplay, BLACK, [randAppleX, randAppleY, STEP, STEP])
-		snake(lead_x, lead_y, BLOCK_SIZE)
+		
+		snakeList = [] # a Snake is made of a list of pieces
+		snakeHead = []
+		snakeHead.append(lead_x)
+		snakeHead.append(lead_y)
+		snakeList.append(snakeHead)
+		
+		snake(snakeList, BLOCK_SIZE)
 		#gameDisplay.fill(BLACK, rect=[200, 200, 10, 10])
 		
 		if lead_x == randAppleX and lead_y == randAppleY:
