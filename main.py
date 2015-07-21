@@ -21,17 +21,30 @@ pygame.display.set_caption('The Fun Game')
 STEP = 10
 BLOCK_SIZE = 10
 FPS = 30
+# the img is declared is out any logic to avoid many IOs
+head = pygame.image.load('C:/Users/Josetalito/Desktop/CS/Pygame/snakehead.png')
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 25)
 
 def snake(snakeList, BLOCK_SIZE):
-	for piece in snakeList:
+
+	gameDisplay.blit(head, (snakeList[-1][0], snakeList[-1][1]))
+
+	for piece in snakeList[:-1]:
 		pygame.draw.rect(gameDisplay, RED, [piece[0], piece[1], BLOCK_SIZE, BLOCK_SIZE])
 
+def text_objects(text, color):
+	textSurface = font.render(text, True, color)
+	return textSurface, textSurface.get_rect()
+		
 def message_to_screen(msg, color): 
-	screen_text = font.render(msg, True, color)
+	textSurface, textRect = text_objects(msg, color)
+	#screen_text = font.render(msg, True, color)
+	#gameDisplay.blit(screen_text, [WIDTH/2, HEIGHT/2])
+	textRect.center = (WIDTH/2), (HEIGHT/2)
 	gameDisplay.fill(BLACK)
-	gameDisplay.blit(screen_text, [WIDTH/2, HEIGHT/2])
+	gameDisplay.blit(textSurface, textRect)
+
 
 def gameLoop():
 	gameExit = False
