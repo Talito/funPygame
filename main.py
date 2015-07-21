@@ -30,12 +30,17 @@ def snake(snakeList, BLOCK_SIZE):
 
 def message_to_screen(msg, color): 
 	screen_text = font.render(msg, True, color)
+	gameDisplay.fill(BLACK)
 	gameDisplay.blit(screen_text, [WIDTH/2, HEIGHT/2])
 
 def gameLoop():
 	gameExit = False
 	gameOver = False
 
+	snakeList = [] # a Snake is made of a list of pieces
+	snakeLength = 1
+
+	#Snake starting pos.
 	lead_x = WIDTH/2
 	lead_y = HEIGHT/2
 
@@ -60,18 +65,21 @@ def gameLoop():
 						gameLoop()
 			
 		for event in pygame.event.get():
-			#print(event)
 			if event.type == pygame.QUIT:
 				gameExit = True
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_LEFT:
 					lead_x_change = -STEP
+					lead_y_change = 0
 				elif event.key == pygame.K_RIGHT:
 					lead_x_change = STEP
+					lead_y_change = 0
 				elif event.key == pygame.K_UP:
 					lead_y_change = -STEP
+					lead_x_change = 0
 				elif event.key == pygame.K_DOWN:
 					lead_y_change = STEP
+					lead_x_change = 0
 
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -89,23 +97,30 @@ def gameLoop():
 		gameDisplay.fill(WHITE)
 		pygame.draw.rect(gameDisplay, BLACK, [randAppleX, randAppleY, STEP, STEP])
 		
-		snakeList = [] # a Snake is made of a list of pieces
+		# the magic, growing the snake
 		snakeHead = []
 		snakeHead.append(lead_x)
 		snakeHead.append(lead_y)
 		snakeList.append(snakeHead)
+
+		if len(snakeList) > snakeLength:
+			del snakeList[0]
+
+		for eachPiece in snakeList[:-1]:
+			if eachPiece == snakeHead:
+				gameOver = True
 		
 		snake(snakeList, BLOCK_SIZE)
-		#gameDisplay.fill(BLACK, rect=[200, 200, 10, 10])
 		
 		if lead_x == randAppleX and lead_y == randAppleY:
 			randAppleX = round((random.randrange(0, WIDTH-STEP))/10.0)*10
 			randAppleY = round((random.randrange(0, HEIGHT-STEP))/10.0)*10
+			snakeLength += 1
 		
 		pygame.display.update()
 		clock.tick(FPS)
 		
-	message_to_screen('You are dead', BLACK)
+	message_to_screen('You are dead', WHITE)
 	pygame.display.update()
 	time.sleep(2)
 	pygame.quit()
