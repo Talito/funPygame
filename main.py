@@ -17,12 +17,13 @@ GREEN = (0, 155, 0)
 gameDisplay = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('The Fun Game')
 
+POINTS = 0
 
-STEP = 10
-BLOCK_SIZE = 10
+STEP = 20
+BLOCK_SIZE = 20
 FPS = 30
 # the img is declared is out any logic to avoid many IOs
-head = pygame.image.load('C:/Users/Josetalito/Desktop/CS/Pygame/snakehead.png')
+head = pygame.image.load('snakehead.png')
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 25)
 
@@ -31,7 +32,7 @@ def snake(snakeList, BLOCK_SIZE):
 	gameDisplay.blit(head, (snakeList[-1][0], snakeList[-1][1]))
 
 	for piece in snakeList[:-1]:
-		pygame.draw.rect(gameDisplay, RED, [piece[0], piece[1], BLOCK_SIZE, BLOCK_SIZE])
+		pygame.draw.rect(gameDisplay, GREEN, [piece[0], piece[1], BLOCK_SIZE, BLOCK_SIZE])
 
 def text_objects(text, color):
 	textSurface = font.render(text, True, color)
@@ -64,7 +65,10 @@ def gameLoop():
 	randAppleY = round((random.randrange(0, HEIGHT-STEP))/10.0)*10
 
 	while not gameExit:
-	
+		
+		#screen_text = font.render(POINTS, True, GREEN)
+		#gameDisplay.blit(screen_text, 20, 20)
+		
 		while gameOver == True:
 			gameDisplay.fill(BLACK)
 			message_to_screen("Game Over. Press C to play again, Q to quit", WHITE)
@@ -75,6 +79,7 @@ def gameLoop():
 						gameExit = True
 						gameOver = False
 					if event.key == pygame.K_c:
+						#POINTS = 0
 						gameLoop()
 			
 		for event in pygame.event.get():
@@ -108,7 +113,8 @@ def gameLoop():
 		lead_y += lead_y_change
 		
 		gameDisplay.fill(WHITE)
-		pygame.draw.rect(gameDisplay, BLACK, [randAppleX, randAppleY, STEP, STEP])
+		APPLE_THICKNESS = 30
+		pygame.draw.rect(gameDisplay, RED, [randAppleX, randAppleY, STEP, STEP])
 		
 		# the magic, growing the snake
 		snakeHead = []
@@ -124,11 +130,13 @@ def gameLoop():
 				gameOver = True
 		
 		snake(snakeList, BLOCK_SIZE)
-		
-		if lead_x == randAppleX and lead_y == randAppleY:
-			randAppleX = round((random.randrange(0, WIDTH-STEP))/10.0)*10
-			randAppleY = round((random.randrange(0, HEIGHT-STEP))/10.0)*10
-			snakeLength += 1
+
+		if (lead_x > randAppleX and lead_x < randAppleX + APPLE_THICKNESS) or ((lead_x + BLOCK_SIZE) > randAppleX and (lead_x + BLOCK_SIZE) < (randAppleX + APPLE_THICKNESS)):
+			if (lead_y > randAppleY and lead_y < randAppleY + APPLE_THICKNESS) or ((lead_y + BLOCK_SIZE) > randAppleY and (lead_y + BLOCK_SIZE) < (randAppleY + APPLE_THICKNESS)):	
+				randAppleX = round((random.randrange(0, WIDTH-STEP))/10.0)*10
+				randAppleY = round((random.randrange(0, HEIGHT-STEP))/10.0)*10
+				snakeLength += 1
+				#POINTS += (1+(snakeLength/10))
 		
 		pygame.display.update()
 		clock.tick(FPS)
