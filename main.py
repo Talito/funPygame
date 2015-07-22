@@ -17,39 +17,76 @@ GREEN = (0, 155, 0)
 gameDisplay = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('The Fun Game')
 
-POINTS = 0
+#icon = pygame.image.load()
+#pygame.display.set_icon(icon)
 
 STEP = 20
+APPLE_THICKNESS = 30
 BLOCK_SIZE = 20
 FPS = 30
-# the img is declared is out any logic to avoid many IOs
+# the img is declared out of any logic to avoid many IOs
 head = pygame.image.load('snakehead.png')
 clock = pygame.time.Clock()
-font = pygame.font.SysFont(None, 25)
+
+smallFont = pygame.font.SysFont("comicsansms", 25)
+medFont = pygame.font.SysFont("comicsansms", 50)
+largeFont = pygame.font.SysFont("comicsansms", 75)
+
+def game_intro():
+	intro = True
+	while intro:
+		gameDisplay.fill(WHITE)
+		message_to_screen("WelCome to FunGame",
+						GREEN,
+						0,
+						"large")
+		message_to_screen("Eat apples and fun will come. Period.",
+						RED,
+						60,
+						"medium")
+		message_to_screen("Press S to start the game. Q to quit.",
+						RED,
+						90)
+
+		for event in pygame.event.get():
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_s:
+					gameLoop()
+				elif event.key == pygame.K_q:
+					pygame.quit()
+					quit()
+				elif event.type == pygame.QUIT:
+					pygame.quit()
+					quit()
+
+		pygame.display.update()
+		clock.tick(15)
+
 
 def snake(snakeList, BLOCK_SIZE):
-
 	gameDisplay.blit(head, (snakeList[-1][0], snakeList[-1][1]))
-
 	for piece in snakeList[:-1]:
 		pygame.draw.rect(gameDisplay, GREEN, [piece[0], piece[1], BLOCK_SIZE, BLOCK_SIZE])
 
-def text_objects(text, color):
-	textSurface = font.render(text, True, color)
+def text_objects(text, color, size="small"):
+	if size == "small":
+		textSurface = smallFont.render(text, True, color)
+	elif size == "medium":
+		textSurface = medFont.render(text, True, color)
+	elif size == "large":
+		textSurface = largeFont.render(text, True, color)
 	return textSurface, textSurface.get_rect()
 		
-def message_to_screen(msg, color): 
-	textSurface, textRect = text_objects(msg, color)
-	#screen_text = font.render(msg, True, color)
-	#gameDisplay.blit(screen_text, [WIDTH/2, HEIGHT/2])
-	textRect.center = (WIDTH/2), (HEIGHT/2)
-	gameDisplay.fill(BLACK)
+def message_to_screen(msg, color, y_displace=0, size="small"): # displacement from the center 
+	textSurface, textRect = text_objects(msg, color, size)
+	textRect.center = (WIDTH/2), (HEIGHT/2)+y_displace
 	gameDisplay.blit(textSurface, textRect)
-
 
 def gameLoop():
 	gameExit = False
 	gameOver = False
+
+	POINTS = 0
 
 	snakeList = [] # a Snake is made of a list of pieces
 	snakeLength = 1
@@ -61,17 +98,16 @@ def gameLoop():
 	lead_x_change = 0
 	lead_y_change = 0
 
-	randAppleX = round((random.randrange(0, WIDTH-STEP))/10.0)*10
-	randAppleY = round((random.randrange(0, HEIGHT-STEP))/10.0)*10
+	randAppleX = round(random.randrange(0, WIDTH-STEP))#/10.0)*10
+	randAppleY = round(random.randrange(0, HEIGHT-STEP))#/10.0)*10
 
 	while not gameExit:
 		
-		#screen_text = font.render(POINTS, True, GREEN)
-		#gameDisplay.blit(screen_text, 20, 20)
 		
 		while gameOver == True:
 			gameDisplay.fill(BLACK)
-			message_to_screen("Game Over. Press C to play again, Q to quit", WHITE)
+			message_to_screen("Game Over", RED, -50, "large")
+			message_to_screen("Press C to play again, Q to quit", WHITE, 0, "medium")
 			pygame.display.update()
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
@@ -79,7 +115,7 @@ def gameLoop():
 						gameExit = True
 						gameOver = False
 					if event.key == pygame.K_c:
-						#POINTS = 0
+						POINTS = 0
 						gameLoop()
 			
 		for event in pygame.event.get():
@@ -104,7 +140,7 @@ def gameLoop():
 					lead_x_change = 0
 				elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
 					lead_y_change = 0
-		
+
 		#BOUNDERIES
 		if lead_x >= WIDTH or lead_x <= 0 or lead_y >= HEIGHT or lead_y <= 0:
 			gameOver = True
@@ -113,7 +149,7 @@ def gameLoop():
 		lead_y += lead_y_change
 		
 		gameDisplay.fill(WHITE)
-		APPLE_THICKNESS = 30
+
 		pygame.draw.rect(gameDisplay, RED, [randAppleX, randAppleY, STEP, STEP])
 		
 		# the magic, growing the snake
@@ -136,15 +172,18 @@ def gameLoop():
 				randAppleX = round((random.randrange(0, WIDTH-STEP))/10.0)*10
 				randAppleY = round((random.randrange(0, HEIGHT-STEP))/10.0)*10
 				snakeLength += 1
-				#POINTS += (1+(snakeLength/10))
+				POINTS += (1+(snakeLength/3))
+
+		message_to_screen(str(POINTS), GREEN, -200, "large")
 		
 		pygame.display.update()
 		clock.tick(FPS)
-		
-	message_to_screen('You are dead', WHITE)
+	
+	gameDisplay.fill(BLACK)
+	message_to_screen('FUNGAME 2015 :)', WHITE, 0)
 	pygame.display.update()
-	time.sleep(2)
+	time.sleep(1)
 	pygame.quit()
 	quit()
-	
-gameLoop()
+
+game_intro()	
