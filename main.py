@@ -12,6 +12,7 @@ WHITE = (255, 255, 255) #RGB
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 155, 0)
+KHAKI = (240, 230, 140)
 
 # returns a "surface" for the game
 gameDisplay = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -174,7 +175,7 @@ def gameLoop():
 				snakeLength += 1
 				POINTS += (1+(snakeLength/3))
 
-		message_to_screen(str(POINTS), GREEN, -200, "large")
+		message_to_screen(str(POINTS), KHAKI, -200, "large")
 		
 		pygame.display.update()
 		clock.tick(FPS)
