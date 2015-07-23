@@ -18,8 +18,8 @@ KHAKI = (240, 230, 140)
 gameDisplay = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('The Fun Game')
 
-#icon = pygame.image.load()
-#pygame.display.set_icon(icon)
+icon = pygame.image.load('icon.png')
+pygame.display.set_icon(icon)
 
 STEP = 20
 APPLE_THICKNESS = 30
@@ -27,11 +27,20 @@ BLOCK_SIZE = 20
 FPS = 30
 # the img is declared out of any logic to avoid many IOs
 head = pygame.image.load('snakehead.png')
+apple = pygame.image.load('apple.png')
+
 clock = pygame.time.Clock()
 
 smallFont = pygame.font.SysFont("comicsansms", 25)
 medFont = pygame.font.SysFont("comicsansms", 50)
 largeFont = pygame.font.SysFont("comicsansms", 75)
+
+def randAppleGen():
+	randAppleX = round(random.randrange(0, WIDTH-APPLE_THICKNESS))#/10.0)*10
+	randAppleY = round(random.randrange(0, HEIGHT-APPLE_THICKNESS))#/10.0)*10
+
+	return randAppleX, randAppleY
+	
 
 def game_intro():
 	intro = True
@@ -91,6 +100,8 @@ def gameLoop():
 
 	snakeList = [] # a Snake is made of a list of pieces
 	snakeLength = 1
+	
+	randAppleX, randAppleY = randAppleGen()
 
 	#Snake starting pos.
 	lead_x = WIDTH/2
@@ -98,9 +109,6 @@ def gameLoop():
 
 	lead_x_change = 0
 	lead_y_change = 0
-
-	randAppleX = round(random.randrange(0, WIDTH-STEP))#/10.0)*10
-	randAppleY = round(random.randrange(0, HEIGHT-STEP))#/10.0)*10
 
 	while not gameExit:
 		
@@ -151,7 +159,8 @@ def gameLoop():
 		
 		gameDisplay.fill(WHITE)
 
-		pygame.draw.rect(gameDisplay, RED, [randAppleX, randAppleY, STEP, STEP])
+		gameDisplay.blit(apple, randApple())
+		#pygame.draw.rect(gameDisplay, RED, [randAppleX, randAppleY, STEP, STEP])
 		
 		# the magic, growing the snake
 		snakeHead = []
@@ -170,12 +179,14 @@ def gameLoop():
 
 		if (lead_x > randAppleX and lead_x < randAppleX + APPLE_THICKNESS) or ((lead_x + BLOCK_SIZE) > randAppleX and (lead_x + BLOCK_SIZE) < (randAppleX + APPLE_THICKNESS)):
 			if (lead_y > randAppleY and lead_y < randAppleY + APPLE_THICKNESS) or ((lead_y + BLOCK_SIZE) > randAppleY and (lead_y + BLOCK_SIZE) < (randAppleY + APPLE_THICKNESS)):	
-				randAppleX = round((random.randrange(0, WIDTH-STEP))/10.0)*10
-				randAppleY = round((random.randrange(0, HEIGHT-STEP))/10.0)*10
+				randAppleX, randAppleY = randAppleGen()
 				snakeLength += 1
 				POINTS += (1+(snakeLength/3))
 
 		message_to_screen(str(POINTS), KHAKI, -200, "large")
+		# alternative:
+		# text = smallfont.render(str(POINTS), True black)
+		# gameDisplay.blit(text, [0, 0])
 		
 		pygame.display.update()
 		clock.tick(FPS)
